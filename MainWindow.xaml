@@ -7,6 +7,47 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid HorizontalAlignment="Left" Height="196" Margin="37,21,0,0" VerticalAlignment="Top" Width="204">
+            <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204"/>
+            <Button x:Name="button_t" Content="T" HorizontalAlignment="Center" Margin="0,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_t_Click"/>
+            <Button x:Name="button_1" Content="1" HorizontalAlignment="Left" Margin="9,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_1_Click"/>
+            <Button x:Name="button_2" Content="2" HorizontalAlignment="Left" Margin="149,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_2_Click"/>
+            <Button x:Name="button_3" Content="3" HorizontalAlignment="Left" Margin="9,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_3_Click"/>
+            <Button x:Name="button_4" Content="4" HorizontalAlignment="Left" Margin="149,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_4_Click"/>
+            <Button x:Name="button_em" Content="EM" Background="Red" HorizontalAlignment="Left" Margin="149,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_em_Click"/>
+        </Grid>
+        <Label Content="3° Andar" HorizontalAlignment="Left" Margin="454,51,0,0" VerticalAlignment="Top"/>
+        <Grid HorizontalAlignment="Left" Height="115" Margin="549,71,0,0" VerticalAlignment="Top" Width="60">
+            <Button x:Name="button_setAndar_3" Content="3° Andar" HorizontalAlignment="Left" Margin="0,24,0,0" VerticalAlignment="Top" Click="Button_Click" Width="60"/>
+            <Button x:Name="button_setAndar_t" Content="Térreo" HorizontalAlignment="Left" Margin="0,96,0,0" VerticalAlignment="Top" Click="Button_Click" Width="60"/>
+            <Button x:Name="button_setAndar_1" Content="1° Andar" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click" Width="60" Margin="0,72,0,0"/>
+            <Button x:Name="button_setAndar_4" Content="4° Andar" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click" Width="60"/>
+            <Button x:Name="button_setAndar_2" Content="2° Andar" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click" Width="60" Margin="0,48,0,0"/>
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="84" Margin="391,82,0,0" VerticalAlignment="Top" Width="119">
+            <Button Visibility="Visible" BorderBrush="Transparent" x:Name="button_descer" HorizontalAlignment="Left" Margin="70,56,0,0" VerticalAlignment="Top" Height="27" Width="50">
+                <Image Source="/Icon/botao_subir_0.png" RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180.174"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+            </Button>
+            <Button Visibility="Visible" BorderBrush="Transparent" x:Name="button_subir" HorizontalAlignment="Left" Margin="70,29,0,0" VerticalAlignment="Top" Height="27" Width="50">
+                <Image Source="/Icon/botao_subir_0.png"/>
+            </Button>
+            <Border x:Name="led_box" BorderThickness="1" BorderBrush="Black" Background="Black" HorizontalAlignment="Left" Height="57" Margin="0,26,0,0" VerticalAlignment="Top" Width="41"/>
+            <Border x:Name="led_f" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="17" Margin="5,35,0,0" VerticalAlignment="Top" Width="4"/>
+            <Border x:Name="led_e" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="17" Margin="5,56,0,0" VerticalAlignment="Top" Width="4"/>
+            <Border x:Name="led_b" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="17" Margin="32,35,0,0" VerticalAlignment="Top" Width="4"/>
+            <Border x:Name="led_c" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="17" Margin="32,56,0,0" VerticalAlignment="Top" Width="4"/>
+            <Border x:Name="led_a" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="4" Margin="11,31,0,0" VerticalAlignment="Top" Width="19"/>
+            <Border x:Name="led_g" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="4" Margin="11,52,0,0" VerticalAlignment="Top" Width="19"/>
+            <Border x:Name="led_d" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Height="4" Margin="11,73,0,0" VerticalAlignment="Top" Width="19"/>
+            <Label Name="label_status" Content="status" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        </Grid>
+        <CheckBox x:Name="checkBox_automatico" Content="Automático" HorizontalAlignment="Left" Margin="496,31,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="checkBox_manual" Content="Manual" HorizontalAlignment="Left" Margin="410,31,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
