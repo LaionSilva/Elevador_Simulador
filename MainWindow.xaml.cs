@@ -85,7 +85,7 @@ namespace Elevador_Simulador
         #endregion
 
 
-        #region ecolher_andar_externo
+        #region botões_externos
         private void button_setAndar_t_Click(object sender, RoutedEventArgs e)
         {
             this.label_status.Content = "Térreo";
@@ -123,6 +123,39 @@ namespace Elevador_Simulador
         #endregion
 
 
+        #region botões_interface_painel_externo
+        private void botao_subir_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!this.subir && !this.emergencia)
+            {
+                this.subir = !this.subir;
+                this.led_botao_subir.Background = this.subir ? Brushes.OrangeRed : Brushes.Gray;
+            }
+        }
+
+        private void botao_descer_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!this.descer && !this.emergencia)
+            {
+                this.descer = !this.descer;
+                this.led_botao_descer.Background = this.descer ? Brushes.OrangeRed : Brushes.Gray;
+            }
+        }
+
+        private void checkBox_manual_Checked(object sender, RoutedEventArgs e)
+        {
+            this.modoManual = true;
+            this.checkBox_automatico.IsChecked = false;
+        }
+
+        private void checkBox_automatico_Checked(object sender, RoutedEventArgs e)
+        {
+            this.modoManual = false;
+            this.checkBox_manual.IsChecked = false;
+        }
+        #endregion
+
+
         private void DisplayAndar(int digito)
         {
             ledDisplay = (digito % 10) switch
@@ -148,24 +181,6 @@ namespace Elevador_Simulador
             led_e.Background = ledDisplay[4] ? Brushes.Red : Brushes.Black;
             led_f.Background = ledDisplay[5] ? Brushes.Red : Brushes.Black;
             led_g.Background = ledDisplay[6] ? Brushes.Red : Brushes.Black;
-        }
-
-        private void botao_subir_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!this.subir && !this.emergencia)
-            {
-                this.subir = !this.subir;
-                this.led_botao_subir.Background = this.subir ? Brushes.OrangeRed : Brushes.Gray;
-            }
-        }
-
-        private void botao_descer_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!this.descer && !this.emergencia)
-            {
-                this.descer = !this.descer;
-                this.led_botao_descer.Background = this.descer ? Brushes.OrangeRed : Brushes.Gray;
-            }
         }
 
         private void CheckFlags()
@@ -194,16 +209,12 @@ namespace Elevador_Simulador
             }
         }
 
-        private void checkBox_manual_Checked(object sender, RoutedEventArgs e)
+        private string GerarLog(int nAndarOrigem, int nAndarDestino)
         {
-            this.modoManual = true;
-            this.checkBox_automatico.IsChecked = false;
-        }
+            string origem = nAndarOrigem != 0 ? $"{nAndarOrigem}° Andar" : "Térreo";
+            string destino = nAndarDestino != 0 ? $"{nAndarDestino}° Andar" : "Térreo";
 
-        private void checkBox_automatico_Checked(object sender, RoutedEventArgs e)
-        {
-            this.modoManual = false;
-            this.checkBox_manual.IsChecked = false;
+            return $"{DateTime.Now.ToString()} | {origem} => {destino}";
         }
     }
 }
