@@ -30,7 +30,7 @@
         <Grid HorizontalAlignment="Left" Height="197" Margin="258,21,0,0" VerticalAlignment="Top" Width="205">
             <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204">
                 <Grid HorizontalAlignment="Center" Height="176" VerticalAlignment="Center" Width="184">
-                    <Label Content="Térreo" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Margin="0,39,0,0" VerticalAlignment="Top" Width="72"/>
+                    <Label Name="Legenda" Content="Térreo" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Margin="0,39,0,0" VerticalAlignment="Top" Width="72"/>
                     <Grid HorizontalAlignment="Left" Height="96" Margin="37,70,0,0" VerticalAlignment="Top" Width="119">
                         <Border x:Name="led_botao_descer" BorderBrush="Transparent" Background="Gray" BorderThickness="0" HorizontalAlignment="Left" Height="28" Margin="49,56,0,0" VerticalAlignment="Top" Width="53"/>
                         <Border x:Name="led_botao_subir" BorderBrush="Transparent" Background="Gray" BorderThickness="0" HorizontalAlignment="Left" Height="29" Margin="49,24,0,0" VerticalAlignment="Top" Width="53"/>

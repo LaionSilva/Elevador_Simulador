@@ -67,6 +67,7 @@ namespace Elevador_Simulador
             timer0 = new DispatcherTimer();
             timer0.Interval = TimeSpan.FromMilliseconds(1000);
             timer0.Tick += executarElevador;
+            timer0.Tick += CheckFlags;
             timer0.Start();
 
             this.CheckFlags();
@@ -110,35 +111,36 @@ namespace Elevador_Simulador
         #region botões_externos
         private void button_setAndar_t_Click(object sender, RoutedEventArgs e)
         {
-            this.label_status.Content = "Térreo";
+            this.Legenda.Content = "Térreo";
+            
             this.andarAtual = 0;
             this.CheckFlags();
         }
 
         private void button_setAndar_1_Click(object sender, RoutedEventArgs e)
         {
-            this.label_status.Content = "1° Andar";
+            this.Legenda.Content = "1° Andar";
             this.andarAtual = 1;
             this.CheckFlags();
         }
 
         private void button_setAndar_2_Click(object sender, RoutedEventArgs e)
         {
-            this.label_status.Content = "2° Andar";
+            this.Legenda.Content = "2° Andar";
             this.andarAtual = 2;
             this.CheckFlags();
         }
 
         private void button_setAndar_3_Click(object sender, RoutedEventArgs e)
         {
-            this.label_status.Content = "3° Andar";
+            this.Legenda.Content = "3° Andar";
             this.andarAtual = 3;
             this.CheckFlags();
         }
 
         private void button_setAndar_4_Click(object sender, RoutedEventArgs e)
         {
-            this.label_status.Content = "4° Andar";
+            this.Legenda.Content = "4° Andar";
             this.andarAtual = 4;
             this.CheckFlags();
         }
@@ -150,10 +152,9 @@ namespace Elevador_Simulador
         {
             if (!this.subir && !this.emergencia)
             {
-                this.subir = !this.subir;
-                this.led_botao_subir.Background = this.subir ? Brushes.OrangeRed : Brushes.Gray;
                 this.andares[this.andarAtual].Subir();
-                this.elevador.NovoDestino(this.andarAtual);
+                //this.elevador.NovoDestino(this.andarAtual);
+                this.CheckFlags();
             }
         }
 
@@ -161,10 +162,9 @@ namespace Elevador_Simulador
         {
             if (!this.descer && !this.emergencia)
             {
-                this.descer = !this.descer;
-                this.led_botao_descer.Background = this.descer ? Brushes.OrangeRed : Brushes.Gray;
                 this.andares[this.andarAtual].Descer();
-                this.elevador.NovoDestino(this.andarAtual);
+                //this.elevador.NovoDestino(this.andarAtual);
+                this.CheckFlags();
             }
         }
 
@@ -184,7 +184,24 @@ namespace Elevador_Simulador
         private void executarElevador(object sender, EventArgs e)
         {
             this.elevador.Movimento(this.andares);
-            this.DisplayAndar(andarAtual);
+            
+        }
+        private void AtualizarBotoesExternos(int andar)
+        {
+            this.button_setAndar_1.Background = Brushes.DarkGray;
+            this.button_setAndar_2.Background = Brushes.DarkGray;
+            this.button_setAndar_3.Background = Brushes.DarkGray;
+            this.button_setAndar_4.Background = Brushes.DarkGray;
+            this.button_setAndar_t.Background = Brushes.DarkGray;
+            var cor = andar switch
+            {
+                0 => this.button_setAndar_t.Background = Brushes.OrangeRed,
+                1 => this.button_setAndar_1.Background = Brushes.OrangeRed,
+                2 => this.button_setAndar_2.Background = Brushes.OrangeRed,
+                3 => this.button_setAndar_3.Background = Brushes.OrangeRed,
+                4 => this.button_setAndar_4.Background = Brushes.OrangeRed,
+                _ => throw new NotImplementedException()
+            };
         }
 
         private void DisplayAndar(int digito)
@@ -214,6 +231,10 @@ namespace Elevador_Simulador
             led_g.Background = ledDisplay[6] ? Brushes.Red : Brushes.Black;
         }
 
+        private void CheckFlags(object sender, EventArgs e)
+        {
+            this.CheckFlags();
+        }
         private void CheckFlags()
         {
             bool value;
@@ -225,6 +246,11 @@ namespace Elevador_Simulador
             value = !(this.andarAtual == 0);
             this.botao_descer.Background = value ? Brushes.Transparent : Brushes.White;
             this.botao_descer.IsEnabled = value;
+
+            this.AtualizarBotoesExternos(this.andarAtual);
+
+            this.led_botao_subir.Background = this.andares[this.andarAtual].needSubir() ? Brushes.OrangeRed : Brushes.Gray;
+            this.led_botao_descer.Background = this.andares[this.andarAtual].needDescer() ? Brushes.OrangeRed : Brushes.Gray;
 
             if (this.emergencia)
             {
@@ -238,6 +264,8 @@ namespace Elevador_Simulador
                 this.led_botao_subir.Background = Brushes.Gray;
                 this.led_botao_descer.Background = Brushes.Gray;
             }
+            this.DisplayAndar(this.elevador.GetAndarAtual());
+            this.label_status.Content = this.elevador.GetStatus().ToString();
         }
 
         private string GerarLog(int nAndarOrigem, int nAndarDestino)
