@@ -77,6 +77,10 @@ namespace Elevador_Simulador.Classes
                 this.fila.RemoveAt(0);
             }
         }
+        private void SetStatus(StatusElevador stat)
+        {
+            this.status = stat;
+        }
         private void SetFila(int element) 
         {
             this.fila.Add(element);
@@ -109,7 +113,26 @@ namespace Elevador_Simulador.Classes
                     this.SetAndarAtual(StatusElevador.Descendo);
                 else
                     this.SetAndarDestino();
+
+                this.VerifyAndar();
             }
+        }
+        public void VerifyAndar()
+        {
+            // Andar atual = GetAndarByID(this.andar_atual);
+            Andar atual = new Andar();
+            switch (this.GetStatus())
+            {
+                case StatusElevador.Subindo:
+                    if (atual.needSubir())
+                        this.SetStatus(StatusElevador.Parado);
+                    break;
+                case StatusElevador.Descendo:
+                    if (atual.needDescer())
+                        this.SetStatus(StatusElevador.Parado);
+                    break;
+            }
+            
         }
 
     }
