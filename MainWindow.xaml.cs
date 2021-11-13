@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Windows.Threading;
+
 namespace Elevador_Simulador
 {
     /// <summary>
@@ -33,6 +35,11 @@ namespace Elevador_Simulador
         private bool modoManual;
         private bool emergencia;
 
+        private Elevador elevador;
+        private Andar[] andares;
+
+        private static DispatcherTimer timer0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +53,22 @@ namespace Elevador_Simulador
             this.modoManual = false;
             this.emergencia = false;
 
-            this.DisplayAndar(andarAtual);
+            this.elevador = new Elevador();
+            this.andares = new Andar[5]
+            {
+                new Andar(0),
+                new Andar(1),
+                new Andar(2),
+                new Andar(3),
+                new Andar(4)
+            };
+
+
+            timer0 = new DispatcherTimer();
+            timer0.Interval = TimeSpan.FromMilliseconds(1000);
+            timer0.Tick += executarElevador;
+            timer0.Start();
+
             this.CheckFlags();
         }
 
@@ -54,27 +76,27 @@ namespace Elevador_Simulador
         #region botões_internos
         private void button_t_Click(object sender, RoutedEventArgs e)
         {
-
+            this.elevador.ClickBotao(0);
         }
 
         private void button_1_Click(object sender, RoutedEventArgs e)
         {
-
+            this.elevador.ClickBotao(1);
         }
 
         private void button_2_Click(object sender, RoutedEventArgs e)
         {
-
+            this.elevador.ClickBotao(2);
         }
 
         private void button_3_Click(object sender, RoutedEventArgs e)
         {
-
+            this.elevador.ClickBotao(3);
         }
 
         private void button_4_Click(object sender, RoutedEventArgs e)
         {
-
+            this.elevador.ClickBotao(4);
         }
 
         private void button_em_Click(object sender, RoutedEventArgs e)
@@ -130,6 +152,8 @@ namespace Elevador_Simulador
             {
                 this.subir = !this.subir;
                 this.led_botao_subir.Background = this.subir ? Brushes.OrangeRed : Brushes.Gray;
+                this.andares[this.andarAtual].Subir();
+                this.elevador.NovoDestino(this.andarAtual);
             }
         }
 
@@ -139,6 +163,8 @@ namespace Elevador_Simulador
             {
                 this.descer = !this.descer;
                 this.led_botao_descer.Background = this.descer ? Brushes.OrangeRed : Brushes.Gray;
+                this.andares[this.andarAtual].Descer();
+                this.elevador.NovoDestino(this.andarAtual);
             }
         }
 
@@ -155,6 +181,11 @@ namespace Elevador_Simulador
         }
         #endregion
 
+        private void executarElevador(object sender, EventArgs e)
+        {
+            this.elevador.Movimento(this.andares);
+            this.DisplayAndar(andarAtual);
+        }
 
         private void DisplayAndar(int digito)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elevador_Simulador.Classes
+namespace Elevador_Simulador
 {
     class Elevador
     {
@@ -85,6 +85,10 @@ namespace Elevador_Simulador.Classes
         {
             this.fila.Add(element);
         }
+        public void ClickBotao(int andar)
+        {
+            this.botoes[andar] = true;
+        }
         #endregion
 
         public void NovoDestino(int novo_destino) 
@@ -103,7 +107,7 @@ namespace Elevador_Simulador.Classes
                 this.status = StatusElevador.Parado;
         }
 
-        public async Task Movimento(List<Andar> andares)
+        public async void Movimento(Andar[] andares)
         {
             if(this.GetStatus() != StatusElevador.Parado)
             {
@@ -117,9 +121,9 @@ namespace Elevador_Simulador.Classes
                 this.VerifyAndar(andares);
             }
         }
-        public void VerifyAndar(List<Andar> andares)
+        public void VerifyAndar(Andar[] andares)
         {
-            Andar atual = andares.Find(a => a.numero == this.andar_atual);
+            Andar atual = andares[this.GetAndarAtual()];
             switch (this.GetStatus())
             {
                 case StatusElevador.Subindo:
@@ -127,7 +131,8 @@ namespace Elevador_Simulador.Classes
                     {
                         this.SetStatus(StatusElevador.Parado);
                         this.botoes[this.GetAndarAtual()] = false;
-                        //atual.SetSubir(false);
+                        //atual.Desembarcar();
+                        atual.Subiu();
                     }
                     break;
                 case StatusElevador.Descendo:
@@ -135,6 +140,8 @@ namespace Elevador_Simulador.Classes
                     { 
                         this.SetStatus(StatusElevador.Parado);
                         this.botoes[this.GetAndarAtual()] = false;
+                        //atual.Desembarcar();
+                        atual.Desceu();
                     }
                     break;
             }

@@ -60,6 +60,13 @@ namespace Elevador_Simulador
         {
             this.subir = true;
         }
+        /// <summary>
+        /// Elevador está neste andar, subindo
+        /// </summary>
+        public void Subiu()
+        {
+            this.subir = false;
+        }
 
         /// <summary>
         /// Solicitar descida a partir deste andar
@@ -67,6 +74,13 @@ namespace Elevador_Simulador
         public void Descer()
         {
             this.descer = true;
+        }
+        /// <summary>
+        /// Elevador está neste andar, descendo
+        /// </summary>
+        public void Desceu()
+        {
+            this.descer = false;
         }
 
         /// <summary>
