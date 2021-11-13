@@ -103,7 +103,7 @@ namespace Elevador_Simulador.Classes
                 this.status = StatusElevador.Parado;
         }
 
-        public async Task Movimento()
+        public async Task Movimento(List<Andar> andares)
         {
             if(this.GetStatus() != StatusElevador.Parado)
             {
@@ -114,22 +114,28 @@ namespace Elevador_Simulador.Classes
                 else
                     this.SetAndarDestino();
 
-                this.VerifyAndar();
+                this.VerifyAndar(andares);
             }
         }
-        public void VerifyAndar()
+        public void VerifyAndar(List<Andar> andares)
         {
-            // Andar atual = GetAndarByID(this.andar_atual);
-            Andar atual = new Andar();
+            Andar atual = andares.Find(a => a.numero == this.andar_atual);
             switch (this.GetStatus())
             {
                 case StatusElevador.Subindo:
-                    if (atual.needSubir())
+                    if (atual.needSubir() || this.botoes[this.GetAndarAtual()])
+                    {
                         this.SetStatus(StatusElevador.Parado);
+                        this.botoes[this.GetAndarAtual()] = false;
+                        //atual.SetSubir(false);
+                    }
                     break;
                 case StatusElevador.Descendo:
-                    if (atual.needDescer())
+                    if (atual.needDescer() || this.botoes[this.GetAndarAtual()])
+                    { 
                         this.SetStatus(StatusElevador.Parado);
+                        this.botoes[this.GetAndarAtual()] = false;
+                    }
                     break;
             }
             
