@@ -90,6 +90,14 @@ namespace Elevador_Simulador
         {
             this.desembarcar = true;
         }
+
+        /// <summary>
+        /// Elevador está neste andar, desembarcando
+        /// </summary>
+        public void Desembarcou()
+        {
+            this.desembarcar = false;
+        }
         #endregion
 
     }

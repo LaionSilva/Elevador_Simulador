@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Elevador_Simulador.Classes;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Elevador_Simulador
@@ -8,35 +10,49 @@ namespace Elevador_Simulador
     class Elevador
     {
         #region Construtores
-        public Elevador() 
+        public Elevador(Predio predio) 
         {
-            this.ConstrutorDefault(5);
-        }
-        public Elevador(int qtd) 
-        {
-            this.qtd_andar = qtd;
-            this.ConstrutorDefault(this.qtd_andar);
-        }
-        private void ConstrutorDefault(int qtd)
-        {
-            this.qtd_andar = qtd;
+            this.Predio = predio;
             this.status = StatusElevador.Parado;
             this.andar_atual = 0; //Térreo
-            this.botoes = new bool[qtd];
+            this.botoes = new bool[this.Predio.qtdAndares];
+
+            this.ClickButton += this.ClicarBotao;
+
+            this.MoverPortas = false;
+
+            this.Movimento = new Task(this.IniciarOperação);
+            this.Movimento.Start();
         }
         #endregion
 
+        // Task de movimentação do elevador
+        private Task Movimento;
+
+        private delegate void ClickButtonElevador(int button);
+        private event ClickButtonElevador ClickButton;
+
+        // Milissegundos
+        private const int timerTrocarAndar = 1000;
+        private const int timerPartidaElevador = 1000;
+        private const int timerFindNewDestiny = 500;
+
+        private Predio Predio;
         private StatusElevador status;
-        private int qtd_andar;
         private int andar_atual;
         private int andar_destino;
         private bool[] botoes;
-        private List<int> fila;
+        private bool MoverPortas;
+
 
         #region Getters And Setters
+        public bool CanMoverPortas()
+        {
+            return this.MoverPortas;
+        }
         public int GetQtdAndar()
         {
-            return qtd_andar;
+            return Predio.qtdAndares;
         }
         public int GetAndarAtual()
         {
@@ -50,145 +66,230 @@ namespace Elevador_Simulador
         {
             return status;
         }
-        private List<int> GetFila()
+        private void SetStatus(StatusElevador stat)
         {
-            if (this.fila == null)
-                this.fila = new List<int>();
-            return this.fila;
+            this.status = stat;
         }
-        private void SetAndarAtual(StatusElevador status)
+        public void LiberarPortas()
         {
-            this.SetStatus(status);
-            switch (status)
-            {
-                case StatusElevador.Subindo:
-                    this.andar_atual++;
-                    break;
-                case StatusElevador.Descendo:
-                    this.andar_atual--;
-                    break;
+            this.MoverPortas = false;
+        }
+        #endregion
 
+
+        #region tasks_movimentação
+        private void IniciarOperação()
+        {
+            // Loop que verifica se há novas solicitações
+            while (true)
+            {
+                // Loop que realiza os movimentos
+                while (true)
+                {
+                    if (this.MoverPortas) continue;
+
+                    // Atualizar status atual do elevador
+                    this.UpStatus();
+
+                    // Buscar novo destino caso o elevador estiver parado
+                    if (status == StatusElevador.Parado)
+                    {
+                        this.defineAndarDestino();
+                        this.UpStatus();
+                        if(this.GetStatus() != StatusElevador.Parado)
+                        {
+                            Thread.Sleep(timerPartidaElevador);
+                        }
+                    }
+
+                    // Se houver intenção de se mover, mova-se
+                    if (status != StatusElevador.Parado)
+                    {
+                        this.MoverElevador();
+                    }
+
+                    // Verificar solicitações do andar atual
+                    this.MoverPortas = this.verifyAndar();
+
+                    // Fim da série de movimentos
+                    if (status == StatusElevador.Parado)
+                        break;
+                }
+                Thread.Sleep(timerFindNewDestiny);
             }
         }
-        private void SetAndarDestino(Andar[] andares)
+
+        private void MoverElevador()
+        {
+            if (this.GetStatus() != StatusElevador.Parado)
+            {
+                Thread.Sleep(timerTrocarAndar);
+                switch (this.GetStatus())
+                {
+                    case StatusElevador.Subindo:
+                        this.andar_atual++;
+                        break;
+                    case StatusElevador.Descendo:
+                        this.andar_atual--;
+                        break;
+                }
+            }
+        }
+        #endregion
+
+
+        #region métodos de operação do elevador
+        private void UpStatus()
+        {
+            if (GetAndarDestino() == this.GetAndarAtual())
+                this.SetStatus(StatusElevador.Parado);
+            else if (GetAndarDestino() > this.GetAndarAtual())
+                this.SetStatus(StatusElevador.Subindo);
+            else if (GetAndarDestino() < this.GetAndarAtual())
+                this.SetStatus(StatusElevador.Descendo);
+        }
+
+        private void defineAndarDestino()
         {
             var aux = this.andar_destino;
             
             switch (this.GetStatus()){
                 case StatusElevador.Subindo:
-                    this.DefineDestinoAcima(andares);
+                    this.andar_destino = this.BuscarDestinoAcima();
                     if (this.andar_destino == aux)
-                        this.DefineDestinoAbaixo(andares);
+                        this.andar_destino = this.BuscarDestinoAbaixo();
                     break;
                 case StatusElevador.Descendo:
-                    this.DefineDestinoAbaixo(andares);
+                    this.andar_destino = this.BuscarDestinoAbaixo();
                     if (this.andar_destino == aux)
-                        this.DefineDestinoAcima(andares);
+                        this.andar_destino = this.BuscarDestinoAcima();
                     break;
                 case StatusElevador.Parado:
-                    this.DefineDestinoAcima(andares);
+                    this.andar_destino = this.BuscarDestinoAcima();
                     if (this.andar_destino == aux)
-                        this.DefineDestinoAbaixo(andares);
+                        this.andar_destino = this.BuscarDestinoAbaixo();
                     break;
             }
         }
-        private void DefineDestinoAcima(Andar[] andares)
+
+        private int BuscarDestinoAcima()
         {
             for (int i = this.GetAndarDestino(); i < this.GetQtdAndar(); i++)
             {
-                if (andares[i].needSubir() || andares[i].needDescer())
+                if (this.Predio.andares[i].needSubir() || this.Predio.andares[i].needDesembarcar())
                 {
-                    this.andar_destino = i;
                     this.SetStatus(StatusElevador.Subindo);
-                    return;
+                    return i;
                 }
             }
+            for (int i = this.GetAndarDestino() + 1; i < this.GetQtdAndar(); i++)
+            {
+                if (this.Predio.andares[i].needDescer() || this.Predio.andares[i].needDesembarcar())
+                {
+                    this.SetStatus(StatusElevador.Subindo );
+                    return i;
+                }
+            }
+            return this.andar_destino;
         }
-        private void DefineDestinoAbaixo(Andar[] andares)
+
+        private int BuscarDestinoAbaixo()
         {
             for (int i = this.GetAndarDestino(); i >= 0; i--)
             {
-                if (andares[i].needDescer() || andares[i].needSubir())
+                if (this.Predio.andares[i].needDescer() || this.Predio.andares[i].needDesembarcar())
                 {
-                    this.andar_destino = i;
                     this.SetStatus(StatusElevador.Descendo);
-                    return;
+                    return i;
                 }
             }
+            for (int i = this.GetAndarDestino() - 1; i >= 0; i--)
+            {
+                if (this.Predio.andares[i].needSubir() || this.Predio.andares[i].needDesembarcar())
+                {
+                    this.SetStatus(StatusElevador.Descendo);
+                    return i;
+                }
+            }
+            return this.andar_destino;
         }
 
-        private void SetStatus(StatusElevador stat)
+        public bool verifyAndar()
         {
-            this.status = stat;
-        }
-        private void SetFila(int element) 
-        {
-            this.fila.Add(element);
-        }
-        public void ClickBotao(int andar)
-        {
-            this.botoes[andar] = true;
+            Andar atual = this.Predio.andares[this.GetAndarAtual()];
+            this.botoes[this.GetAndarAtual()] = false;
+
+            switch (this.GetStatus())
+            {
+                case StatusElevador.Subindo:
+                    if (this.andar_atual == this.GetQtdAndar() - 1 || atual.needSubir() || atual.needDesembarcar() || this.botoes[this.GetAndarAtual()])
+                    {
+                        this.SetStatus(StatusElevador.Parado);
+                        atual.Subiu();
+                        atual.Desembarcou();
+                        if (this.andar_atual == this.BuscarDestinoAcima())
+                        {
+                            atual.Desceu();
+                        }
+                        return true;
+                    }
+                    break;
+                case StatusElevador.Descendo:
+                    if (this.andar_atual == 0 || atual.needDescer() || atual.needDesembarcar() || this.botoes[this.GetAndarAtual()])
+                    {
+                        this.SetStatus(StatusElevador.Parado);
+                        atual.Desceu();
+                        atual.Desembarcou();
+                        if (this.andar_atual == this.BuscarDestinoAbaixo())
+                        {
+                            atual.Subiu();
+                        }
+                        return true;
+                    }
+                    break;
+                case StatusElevador.Parado:
+                    if (atual.needDescer() || atual.needSubir() || atual.needDesembarcar() || this.botoes[this.GetAndarAtual()])
+                    {
+                        atual.Desceu();
+                        atual.Subiu();
+                        atual.Desembarcou();
+                        return true;
+                    }
+                    break;
+            }
+            return false;
         }
         #endregion
 
-        public void NovoDestino(int novo_destino) 
+
+        #region event click botões elevador
+        /// <summary>
+        /// Método que dispara o evento responsável pelos comandos dos botões
+        /// </summary>
+        public void EventClickButton(int andar)
         {
-            
+            this.ClickButton(andar);
         }
-        private void Emergencia() 
+
+        /// <summary>
+        /// Método inscrito no Event ClickButton para startar os comandos de cada botão
+        /// </summary>
+        private void ClicarBotao(int botao)
         {
+            this.Predio.andares[botao].Desembarcar();
+        }
+        #endregion
+
+
+        public void Emergencia() 
+        {
+            this.SetStatus(StatusElevador.Parado);
+            this.andar_destino = this.GetAndarAtual();
+
             if (this.status == StatusElevador.Parado)
                 Console.WriteLine("Alguém está preso");
             else
                 this.status = StatusElevador.Parado;
         }
-
-        public async void Movimento(Andar[] andares)
-        {
-            
-            if (this.GetAndarDestino() > this.GetAndarAtual())
-                this.SetAndarAtual(StatusElevador.Subindo);
-            else if (this.GetAndarDestino() < this.GetAndarAtual())
-                this.SetAndarAtual(StatusElevador.Descendo);
-            else
-                this.SetAndarDestino(andares);
-
-            this.VerifyAndar(andares);
-          
-        }
-        public void VerifyAndar(Andar[] andares)
-        {
-            Andar atual = andares[this.GetAndarAtual()];
-            switch (this.GetStatus())
-            {
-                case StatusElevador.Subindo:
-                    if (atual.needSubir() || this.botoes[this.GetAndarAtual()])
-                    {
-                        this.SetStatus(StatusElevador.Parado);
-                        this.botoes[this.GetAndarAtual()] = false;
-                        //atual.Desembarcar();
-                        atual.Subiu();
-                    }
-                    if (this.GetAndarAtual() == this.GetQtdAndar() - 1)
-                    {
-                        this.SetStatus(StatusElevador.Parado);
-                        this.botoes[this.GetAndarAtual()] = false;
-                        atual.Desceu();
-                    }
-                            
-                    break;
-                case StatusElevador.Descendo:
-                    if (atual.needDescer() || this.botoes[this.GetAndarAtual()])
-                    { 
-                        this.SetStatus(StatusElevador.Parado);
-                        this.botoes[this.GetAndarAtual()] = false;
-                        //atual.Desembarcar();
-                        atual.Desceu();
-                    }
-                    break;
-            }
-            
-        }
-
     }
 }

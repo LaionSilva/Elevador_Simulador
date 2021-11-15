@@ -8,13 +8,20 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid HorizontalAlignment="Left" Height="196" Margin="37,21,0,0" VerticalAlignment="Top" Width="204">
-            <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204"/>
-            <Button x:Name="button_t" Content="T" HorizontalAlignment="Center" Margin="0,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_t_Click"/>
-            <Button x:Name="button_1" Content="1" HorizontalAlignment="Left" Margin="9,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_1_Click"/>
-            <Button x:Name="button_2" Content="2" HorizontalAlignment="Left" Margin="149,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_2_Click"/>
-            <Button x:Name="button_3" Content="3" HorizontalAlignment="Left" Margin="9,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_3_Click"/>
-            <Button x:Name="button_4" Content="4" HorizontalAlignment="Left" Margin="149,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_4_Click"/>
-            <Button x:Name="button_em" Content="EM" Background="DarkGray" HorizontalAlignment="Left" Margin="149,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_em_Click"/>
+            <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204">
+                <Grid HorizontalAlignment="Center" Height="125" Margin="0,9,0,0" VerticalAlignment="Top" Width="76">
+                    <Border Background="Black" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Center" Height="125" VerticalAlignment="Center" Width="76"/>
+                    <Border Background="Gray" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="114" VerticalAlignment="Center" Width="34" Margin="38,0,0,0"/>
+                    <Border x:Name="porta_direita" Background="WhiteSmoke" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="114" VerticalAlignment="Center" Width="34" Margin="4,0,0,0"/>
+                    <Border x:Name="porta_esquerda" Background="Gray" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="114" VerticalAlignment="Center" Width="34" Margin="4,0,0,0"/>
+                </Grid>
+            </Border>
+            <Button x:Name="botao_t_interno" Content="T" HorizontalAlignment="Center" Margin="0,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_t_Click"/>
+            <Button x:Name="botao_1_interno" Content="1" HorizontalAlignment="Left" Margin="9,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_1_Click"/>
+            <Button x:Name="botao_2_interno" Content="2" HorizontalAlignment="Left" Margin="149,77,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_2_Click"/>
+            <Button x:Name="botao_3_interno" Content="3" HorizontalAlignment="Left" Margin="9,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_3_Click"/>
+            <Button x:Name="botao_4_interno" Content="4" HorizontalAlignment="Left" Margin="149,11,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_4_Click"/>
+            <Button x:Name="botao_em_interno" Content="EM" Background="DarkGray" HorizontalAlignment="Left" Margin="149,142,0,0" VerticalAlignment="Top" Height="45" Width="45" Click="button_em_Click"/>
         </Grid>
         <Grid HorizontalAlignment="Left" Height="115" Margin="468,21,0,0" VerticalAlignment="Top" Width="60">
             <Grid.RowDefinitions>
@@ -53,7 +60,7 @@
                         <Border BorderBrush="Transparent" Background="White" BorderThickness="1" HorizontalAlignment="Left" Height="8" Margin="44,51,0,0" VerticalAlignment="Top" Width="62"/>
                     </Grid>
                     <CheckBox x:Name="checkBox_automatico" Content="Automático" HorizontalAlignment="Left" Margin="96,10,0,0" VerticalAlignment="Top" Checked="checkBox_automatico_Checked"/>
-                    <CheckBox x:Name="checkBox_manual" IsChecked="True" Content="Manual" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="checkBox_manual_Checked"/>
+                    <CheckBox x:Name="checkBox_manual" IsChecked="True" Content="Manual" HorizontalAlignment="Left" Margin="10,10,0,151" Checked="checkBox_manual_Checked"/>
                     <Border x:Name="led_emergencia" BorderBrush="Black" Background="DarkGray" BorderThickness="1" HorizontalAlignment="Left" Height="24" Margin="160,152,0,0" VerticalAlignment="Top" Width="24"/>
                     <Label Content="EM" HorizontalAlignment="Left" Margin="159,151,0,0" VerticalAlignment="Top" Width="27"/>
                 </Grid>
