@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Elevador_Simulador"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Simulador de Elevador" Height="270" Width="560">
     <Grid>
         <Grid HorizontalAlignment="Left" Height="196" Margin="37,21,0,0" VerticalAlignment="Top" Width="204">
             <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204">

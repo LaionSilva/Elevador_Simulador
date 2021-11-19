@@ -61,6 +61,8 @@ namespace Elevador_Simulador
         {
             InitializeComponent();
 
+            Files.WriteFile(@"D:\Usuário\Desktop\teste.txt", "Laion Fernandes");
+
             this.andarAtual = 0;
 
             // Flags
