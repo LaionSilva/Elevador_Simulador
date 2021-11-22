@@ -40,10 +40,6 @@ namespace Elevador_Simulador
         private int[] idBotoesExt;
         private byte encoderInt;
         private byte encoderExt;
-        private int[] idBotoesInt;
-        private int[] idBotoesExt;
-        private byte encoderInt;
-        private byte encoderExt;
 
         // Configuração de cores da interface
         private SolidColorBrush colorButtonOff = Brushes.AntiqueWhite;
