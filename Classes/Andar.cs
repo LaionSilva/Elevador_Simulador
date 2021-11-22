@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace Elevador_Simulador
 {
     class Andar
@@ -27,7 +28,7 @@ namespace Elevador_Simulador
 
         #region get_solicitacoes
         /// <summary>
-        /// Verifica se houve uma solicitação de subida neste andar
+        /// Verifica se há uma solicitação de subida neste andar
         /// </summary>
         public bool needSubir()
         {
@@ -35,7 +36,7 @@ namespace Elevador_Simulador
         }
 
         /// <summary>
-        /// Verifica se houve uma solicitação de descida neste andar
+        /// Verifica se há uma solicitação de descida neste andar
         /// </summary>
         public bool needDescer()
         {
@@ -43,11 +44,19 @@ namespace Elevador_Simulador
         }
 
         /// <summary>
-        /// Verifica se houve uma solicitação de desembarque neste andar
+        /// Verifica se há uma solicitação de desembarque neste andar
         /// </summary>
         public bool needDesembarcar()
         {
             return this.desembarcar;
+        }
+
+        /// <summary>
+        /// Verifica se há alguma solicitação pendente neste andar
+        /// </summary>
+        public bool hasPendency()
+        {
+            return this.needSubir() || this.needDescer() || this.needDesembarcar();
         }
         #endregion
 
@@ -98,7 +107,16 @@ namespace Elevador_Simulador
         {
             this.desembarcar = false;
         }
-        #endregion
 
+        /// <summary>
+        /// Finalizar todas as solicitações
+        /// </summary>
+        public void clearSolicitacoes()
+        {
+            this.Desceu();
+            this.Subiu();
+            this.Desembarcou();
+        }
+        #endregion
     }
 }

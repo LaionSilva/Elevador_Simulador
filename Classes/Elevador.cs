@@ -1,14 +1,51 @@
 ﻿using Elevador_Simulador.Classes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Elevador_Simulador
 {
+    /// <summary>
+    /// Classe enum que representa os estados de movimento de um elevador
+    /// </summary>
+    public enum StatusElevador
+    {
+        Subindo,
+        Descendo,
+        Parado
+    }
+
+
     class Elevador
     {
+        #region atributos da classe
+        private const string pathDataLog = @"D:\Usuário\Desktop\logs.txt";
+
+        // Task de movimentação do elevador
+        private Task Movimento;
+
+        // Eventos
+        private delegate void ClickButtonElevador(int button);
+        private event ClickButtonElevador ClickButton;
+
+        // Variáveis de temporização - Em milissegundos
+        private const int timerTrocarAndar = 1000;
+        private const int timerPartidaElevador = 1000;
+        private const int timerFindNewDestiny = 500;
+
+        // Classes
+        private Predio Predio;
+        private Log Logs;
+
+        private StatusElevador status;
+        private int andar_atual;
+        private int andar_destino;
+        private bool[] botoes;
+        private bool MoverPortas;
+        #endregion
+
+
         #region Construtores
         public Elevador(Predio predio) 
         {
@@ -17,6 +54,9 @@ namespace Elevador_Simulador
             this.andar_atual = 0; //Térreo
             this.botoes = new bool[this.Predio.qtdAndares];
 
+            this.Logs = new Log(pathDataLog);
+
+            this.ClickButton += this.GerarLog;
             this.ClickButton += this.ClicarBotao;
 
             this.MoverPortas = false;
@@ -25,24 +65,6 @@ namespace Elevador_Simulador
             this.Movimento.Start();
         }
         #endregion
-
-        // Task de movimentação do elevador
-        private Task Movimento;
-
-        private delegate void ClickButtonElevador(int button);
-        private event ClickButtonElevador ClickButton;
-
-        // Milissegundos
-        private const int timerTrocarAndar = 1000;
-        private const int timerPartidaElevador = 1000;
-        private const int timerFindNewDestiny = 500;
-
-        private Predio Predio;
-        private StatusElevador status;
-        private int andar_atual;
-        private int andar_destino;
-        private bool[] botoes;
-        private bool MoverPortas;
 
 
         #region Getters And Setters
@@ -62,6 +84,10 @@ namespace Elevador_Simulador
         {
             return andar_destino;
         }
+        public string[] GetLogs()
+        {
+            return this.Logs.logs.ToArray();
+        }
         public StatusElevador GetStatus()
         {
             return status;
@@ -77,7 +103,10 @@ namespace Elevador_Simulador
         #endregion
 
 
-        #region tasks_movimentação
+        #region tasks_movimentação        
+        /// <summary>
+        /// Método que controla o funcionamento do elevador
+        /// </summary>
         private void IniciarOperação()
         {
             // Loop que verifica se há novas solicitações
@@ -119,6 +148,9 @@ namespace Elevador_Simulador
             }
         }
 
+        /// <summary>
+        /// Executa um movimento de um andar para outro vizinho
+        /// </summary>
         private void MoverElevador()
         {
             if (this.GetStatus() != StatusElevador.Parado)
@@ -139,6 +171,9 @@ namespace Elevador_Simulador
 
 
         #region métodos de operação do elevador
+        /// <summary>
+        /// Atualiza o Status do elevador
+        /// </summary>
         private void UpStatus()
         {
             if (GetAndarDestino() == this.GetAndarAtual())
@@ -149,6 +184,9 @@ namespace Elevador_Simulador
                 this.SetStatus(StatusElevador.Descendo);
         }
 
+        /// <summary>
+        /// Define um novo andar de destino 
+        /// </summary>
         private void defineAndarDestino()
         {
             var aux = this.andar_destino;
@@ -172,6 +210,9 @@ namespace Elevador_Simulador
             }
         }
 
+        /// <summary>
+        /// Verifica todos os andares acima do atual em busca de uma solicitação pendente
+        /// </summary>
         private int BuscarDestinoAcima()
         {
             for (int i = this.GetAndarDestino(); i < this.GetQtdAndar(); i++)
@@ -193,6 +234,9 @@ namespace Elevador_Simulador
             return this.andar_destino;
         }
 
+        /// <summary>
+        /// Verifica todos os andares abaixo do atual em busca de uma solicitação pendente
+        /// </summary>
         private int BuscarDestinoAbaixo()
         {
             for (int i = this.GetAndarDestino(); i >= 0; i--)
@@ -214,6 +258,10 @@ namespace Elevador_Simulador
             return this.andar_destino;
         }
 
+        /// <summary>
+        /// Verifica e atende às solicitações do andar atual
+        /// Retorna "True" caso houver solicitação ou "False" caso não houver
+        /// </summary>
         public bool verifyAndar()
         {
             Andar atual = this.Predio.andares[this.GetAndarAtual()];
@@ -228,9 +276,7 @@ namespace Elevador_Simulador
                         atual.Subiu();
                         atual.Desembarcou();
                         if (this.andar_atual == this.BuscarDestinoAcima())
-                        {
                             atual.Desceu();
-                        }
                         return true;
                     }
                     break;
@@ -241,18 +287,14 @@ namespace Elevador_Simulador
                         atual.Desceu();
                         atual.Desembarcou();
                         if (this.andar_atual == this.BuscarDestinoAbaixo())
-                        {
                             atual.Subiu();
-                        }
                         return true;
                     }
                     break;
                 case StatusElevador.Parado:
                     if (atual.needDescer() || atual.needSubir() || atual.needDesembarcar() || this.botoes[this.GetAndarAtual()])
                     {
-                        atual.Desceu();
-                        atual.Subiu();
-                        atual.Desembarcou();
+                        atual.clearSolicitacoes();
                         return true;
                     }
                     break;
@@ -278,9 +320,21 @@ namespace Elevador_Simulador
         {
             this.Predio.andares[botao].Desembarcar();
         }
+
+        /// <summary>
+        /// Método inscrito no Event ClickButton para gerar registro de log da solicitação realizada 
+        /// </summary>
+        private void GerarLog(int andar)
+        {
+            if(!this.Predio.andares[andar].needDesembarcar())
+                this.Logs.NovoLog(this.GerarLog(this.GetAndarAtual(), andar));
+        }
         #endregion
 
 
+        /// <summary>
+        /// Método que executa as operações de emergência
+        /// </summary>
         public void Emergencia() 
         {
             this.SetStatus(StatusElevador.Parado);
@@ -290,6 +344,26 @@ namespace Elevador_Simulador
                 Console.WriteLine("Alguém está preso");
             else
                 this.status = StatusElevador.Parado;
+        }
+
+        /// <summary>
+        /// Gerar mensagens de log
+        /// </summary>
+        private string GerarLog(int nAndarOrigem, int nAndarDestino)
+        {
+            string origem = nAndarOrigem != 0 ? $"{nAndarOrigem}° Andar" : "Térreo";
+            string destino = nAndarDestino != 0 ? $"{nAndarDestino}° Andar" : "Térreo";
+
+            return $"{DateTime.Now.ToString()} | {origem} => {destino}";
+        }
+
+        /// <summary>
+        /// Alerta a classe Logs que a aplicação será finalizada
+        /// Solicita a inserção do log de final de operação
+        /// </summary>
+        public void FinalizarLogs()
+        {
+            this.Logs.FimOperacao(this.GetAndarAtual() == 0 ? "Térreo" : $"{this.GetAndarAtual()}° Andar");
         }
     }
 }
