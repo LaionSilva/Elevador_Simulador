@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +11,7 @@ namespace Elevador_Simulador.Classes
     {
         private Random random = new Random();
         private Predio Predio;
+
         private Task Simulator;
 
         // Intervalos de tempo entre as chamadas - Em milissegundos
@@ -36,6 +39,8 @@ namespace Elevador_Simulador.Classes
         {
             while (!this.parar)
             {
+                Thread.Sleep(random.Next(this.minTimeCall, this.maxTimeCall));
+
                 if (random.Next(10) % 2 == 0)
                     this.Predio.andares[random.Next(this.Predio.qtdAndares)].Subir();
                 else
@@ -52,7 +57,7 @@ namespace Elevador_Simulador.Classes
         public void IniciarSimulacao()
         {
             if(!this.parar)
-                this.Simulator.Start();
+            this.Simulator.Start();
         }
 
         /// <summary>
