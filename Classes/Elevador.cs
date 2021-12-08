@@ -20,8 +20,6 @@ namespace Elevador_Simulador
     class Elevador
     {
         #region atributos da classe
-        private const string pathDataLog = @"D:\Usuário\Desktop\logs.txt";
-
         // Task de movimentação do elevador
         private Task Movimento;
 
@@ -30,9 +28,9 @@ namespace Elevador_Simulador
         private event ClickButtonElevador ClickButton;
 
         // Variáveis de temporização - Em milissegundos
-        private const int timerTrocarAndar = 1000;
-        private const int timerPartidaElevador = 1000;
-        private const int timerFindNewDestiny = 500;
+        private int timerTrocarAndar;
+        private int timerPartidaElevador;
+        private int timerFindNewDestiny;
 
         // Classes
         private Predio Predio;
@@ -47,14 +45,18 @@ namespace Elevador_Simulador
 
 
         #region Construtores
-        public Elevador(Predio predio) 
+        public Elevador(Predio predio, Log logs, int timerTrocarAndar = 1000, int timerPartidaElevador = 1000, int timerFindNewDestiny = 500) 
         {
+            this.timerTrocarAndar = timerTrocarAndar;
+            this.timerPartidaElevador = timerPartidaElevador;
+            this.timerFindNewDestiny = timerFindNewDestiny;
+
             this.Predio = predio;
             this.status = StatusElevador.Parado;
             this.andar_atual = 0; //Térreo
             this.botoes = new bool[this.Predio.qtdAndares];
 
-            this.Logs = new Log(pathDataLog);
+            this.Logs = logs;
 
             this.ClickButton += this.GerarLog;
             this.ClickButton += this.ClicarBotao;

@@ -15,12 +15,13 @@ namespace Elevador_Simulador.Classes
 
         public List<string> logs { get => this.Logs; }
 
-        public Log(string pathDataLog, string labelAndarInicial = "Térreo")
+
+        public Log(string pathDataLog, string labelAndarInicial = "Térreo", int nRows = 5)
         {
             this.pathDataLog = pathDataLog;
 
             string[] logs = new string[0];
-            Files.ReadFile(pathDataLog, ref logs);
+            Files.ReadFile(pathDataLog, ref logs, nRows);
             this.Logs.AddRange(logs);
 
             //this.Logs.Add($"{DateTime.Now} | Inicio de operação \t Andar atual: {labelAndarInicial}");
@@ -66,9 +67,18 @@ namespace Elevador_Simulador.Classes
         public static void ReadFile(string path, ref string[] lines, int size = 5)
         {
             try { 
-                lines = new string[size];
                 string[] dados = System.IO.File.ReadAllLines(path);
-                Array.Copy(dados, dados.Length - 1 - size, lines, 0, size);
+                List<string> var = new List<string>();
+                foreach (string d in dados)
+                {
+                    if (d == null || d == "") continue;
+                    var.Add(d.TrimStart().TrimEnd());
+                }
+
+                int count = var.Count - 1 - size < 0 ? 0 : var.Count - 1 - size;
+                size = var.Count > size ? size : var.Count;
+                lines = new string[size];
+                Array.Copy(var.ToArray(), count, lines, 0, size);
             }
             catch (FileNotFoundException) { }
             catch (Exception) { }
@@ -81,7 +91,15 @@ namespace Elevador_Simulador.Classes
         /// <param name="lines">Conteudo a ser escrito</param>
         public static void WriteFile(string path, string[] lines)
         {
-            try { WriteFile(path, lines.Length > 0 ? String.Join("\n", lines) : ""); }
+            try {
+                List<string> var = new List<string>();
+                foreach (string l in lines)
+                {
+                    if (l == null || l == "") continue;
+                    var.Add(l.TrimStart().TrimEnd());
+                }
+                WriteFile(path, lines.Length > 0 ? String.Join("\n", var.ToArray()) : ""); 
+            }
             catch (FileNotFoundException) { }
             catch (Exception) { }
         }

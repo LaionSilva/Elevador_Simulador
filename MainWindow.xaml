@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Elevador_Simulador"
         mc:Ignorable="d"
-        Title="Simulador de Elevador" Height="390" Width="576">
-    <Grid>
+        Title="Simulador de Elevador" Height="453" Width="576">
+    <Grid Margin="0,0,0,-1">
         <Grid HorizontalAlignment="Left" Height="196" Margin="37,21,0,0" VerticalAlignment="Top" Width="204">
             <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Center" Height="196" VerticalAlignment="Center" Width="204">
                 <Grid HorizontalAlignment="Left" Height="125" Margin="117,9,0,0" VerticalAlignment="Top" Width="76">
@@ -82,6 +82,15 @@
         </Grid>
         <Button x:Name="upGrupoExt" HorizontalAlignment="Left" Margin="533,85,0,0" VerticalAlignment="Top" Height="14" Width="14" Click="upGrupoExt_Click"/>
         <Button x:Name="downGrupoExt" HorizontalAlignment="Left" Margin="533,108,0,0" VerticalAlignment="Top" Height="14" Width="14" Click="downGrupoExt_Click"/>
-        <TextBlock x:Name="listLogs" HorizontalAlignment="Left" Margin="37,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="93" Width="426"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="94" Margin="309,230,0,0" VerticalAlignment="Top" Width="154">
+            <Grid Margin="-1,-1,-1,88">
+                <TextBox x:Name="inNumAndares" Margin="65,10,10,-31" TextWrapping="Wrap"/>
+                <Label Content="Andares" Margin="5,6,94,-31"/>
+            </Grid>
+        </Border>
+        <Button Name="editConfig" Content="Salvar" HorizontalAlignment="Left" Margin="392,289,0,0" VerticalAlignment="Top" Width="60" Click="editConfig_Click"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="94" Margin="37,230,0,0" VerticalAlignment="Top" Width="267">
+            <TextBlock x:Name="listLogs" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Height="94" Width="266"/>
+        </Border>
     </Grid>
 </Window>

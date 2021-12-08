@@ -15,7 +15,11 @@ namespace Elevador_Simulador
     {
         #region atributos da classe
         private const int nBotoesPainelInterno = 6; // Número de botões numerados do painel internos
-        private const int nAndares = 15; // Número Máximo de andares, contando com o térreo
+        private int nAndares = 15; // Número Máximo de andares, contando com o térreo
+        private const int nRowLogs = 5; // Número Máximo de registros de logs impressos na tela
+        private const int minTimeSimulator = 5000, maxTimeSimulator = 20000; // Range de tempo para novas chamadas aleatórias no simulador
+
+        private const string pathDataLog = @"D:\Usuário\Desktop\logs.txt";
 
         // Temporizador da aplicação
         private static DispatcherTimer timer0;
@@ -34,6 +38,7 @@ namespace Elevador_Simulador
         private Elevador Elevador;
         private Predio Predio;
         private Simulador Simulador;
+        private Log Logs;
         
         private int andarAtual;
         private int[] idBotoesInt;
@@ -58,11 +63,13 @@ namespace Elevador_Simulador
         public MainWindow()
         {
             // Inicialização das classes do elevador
-            this.Predio = new Predio(nAndares, nBotoesPainelInterno);
-            this.Elevador = new Elevador(this.Predio);
-            this.Simulador = new Simulador(this.Predio, 5000, 20000);
+            this.Predio = new Predio((byte)this.nAndares, nBotoesPainelInterno);
+            this.Logs = new Log(pathDataLog, "Térreo", nRowLogs);
+            this.Elevador = new Elevador(this.Predio, this.Logs);
+            this.Simulador = new Simulador(this.Predio, minTimeSimulator, maxTimeSimulator);
 
             InitializeComponent();
+            this.DataContext = this;
 
             // Flags
             this.modoManual = true;
@@ -76,6 +83,8 @@ namespace Elevador_Simulador
             this.idBotoesExt = new int[nBotoesPainelInterno];
             this.encoderInt = 0;
             this.encoderExt = 0;
+
+            this.inNumAndares.Text = this.nAndares.ToString();
 
             // Temporizador responsável por monitorar e atualizar as variaveis de controle e design
             timer0 = new DispatcherTimer();
@@ -166,6 +175,10 @@ namespace Elevador_Simulador
         /// </summary>
         private void button_em_Click(object sender, RoutedEventArgs e)
         {
+            this.set_emergencia();
+        }
+        private void set_emergencia()
+        {
             this.emergencia = !this.emergencia;
 
             if (this.emergencia)
@@ -226,6 +239,10 @@ namespace Elevador_Simulador
         /// </summary>
         private void checkBox_manual_Clicked(object sender, RoutedEventArgs e)
         {
+            this.set_manual();
+        }
+        private void set_manual()
+        {
             this.modoManual = true;
             this.checkBox_manual.IsChecked = true;
             this.checkBox_automatico.IsChecked = false;
@@ -237,6 +254,10 @@ namespace Elevador_Simulador
         /// Definir sistema para o modo automático
         /// </summary>
         private void checkBox_automatico_Clicked(object sender, RoutedEventArgs e)
+        {
+            this.set_automatico();
+        }
+        private void set_automatico()
         {
             this.modoManual = false;
             this.checkBox_automatico.IsChecked = true;
@@ -353,13 +374,13 @@ namespace Elevador_Simulador
         /// </summary>
         private void AtualizarBotoesExternos(int andar)
         {
-            this.button_setAndar_a.Background = this.Predio.andares[this.idBotoesExt[0]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_b.Background = this.Predio.andares[this.idBotoesExt[1]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_c.Background = this.Predio.andares[this.idBotoesExt[2]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_d.Background = this.Predio.andares[this.idBotoesExt[3]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_e.Background = this.Predio.andares[this.idBotoesExt[4]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_f.Background = this.Predio.andares[this.idBotoesExt[5]].hasPendency() ? colorButtonOnpending : colorButtonOff;
-            this.button_setAndar_t.Background = this.Predio.andares[0].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_a.Background = this.Predio.andares.Length > 1 && this.Predio.andares[this.idBotoesExt[0]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_b.Background = this.Predio.andares.Length > 2 && this.Predio.andares[this.idBotoesExt[1]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_c.Background = this.Predio.andares.Length > 3 && this.Predio.andares[this.idBotoesExt[2]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_d.Background = this.Predio.andares.Length > 4 && this.Predio.andares[this.idBotoesExt[3]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_e.Background = this.Predio.andares.Length > 5 && this.Predio.andares[this.idBotoesExt[4]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_f.Background = this.Predio.andares.Length > 6 && this.Predio.andares[this.idBotoesExt[5]].hasPendency() ? colorButtonOnpending : colorButtonOff;
+            this.button_setAndar_t.Background = this.Predio.andares.Length > 1 && this.Predio.andares[0].hasPendency() ? colorButtonOnpending : colorButtonOff;
 
             int idBotao = (andar > 0) ? (((andar - 1) % nBotoesPainelInterno)) : 0;
             if (this.idBotoesExt[idBotao] == andar || (idBotao == 0 && andar < nBotoesPainelInterno))
@@ -403,13 +424,13 @@ namespace Elevador_Simulador
         /// </summary>
         private void AtualizarBotoesInternos()
         {
-            this.botao_t_interno.Background = this.Predio.andares[0].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_a_interno.Background = this.Predio.andares[this.idBotoesInt[0]].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_b_interno.Background = this.Predio.andares[this.idBotoesInt[1]].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_c_interno.Background = this.Predio.andares[this.idBotoesInt[2]].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_d_interno.Background = this.Predio.andares[this.idBotoesInt[3]].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_e_interno.Background = this.Predio.andares[this.idBotoesInt[4]].needDesembarcar() ? colorButtonOn : colorButtonOff;
-            this.botao_f_interno.Background = this.Predio.andares[this.idBotoesInt[5]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_t_interno.Background =  this.Predio.andares[0].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_a_interno.Background = this.Predio.andares.Length > 1 && this.Predio.andares[this.idBotoesInt[0]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_b_interno.Background = this.Predio.andares.Length > 2 && this.Predio.andares[this.idBotoesInt[1]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_c_interno.Background = this.Predio.andares.Length > 3 && this.Predio.andares[this.idBotoesInt[2]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_d_interno.Background = this.Predio.andares.Length > 4 && this.Predio.andares[this.idBotoesInt[3]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_e_interno.Background = this.Predio.andares.Length > 5 && this.Predio.andares[this.idBotoesInt[4]].needDesembarcar() ? colorButtonOn : colorButtonOff;
+            this.botao_f_interno.Background = this.Predio.andares.Length > 6 && this.Predio.andares[this.idBotoesInt[5]].needDesembarcar() ? colorButtonOn : colorButtonOff;
             this.botao_em_interno.Background = this.emergencia ? colorLedEmergenciaOn : colorLedEmergenciaOff;
 
             this.botao_a_interno.Content = this.idBotoesInt[0] > 0 ? this.idBotoesInt[0].ToString() : "";
@@ -574,7 +595,7 @@ namespace Elevador_Simulador
             string[] logs = this.Elevador.GetLogs();
             string listLogsText = "";
             int count = logs.Length - 1;
-            for (int i = 0; i < (logs.Length > 5 ? 5 : logs.Length); i++)
+            for (int i = 0; i < (logs.Length > nRowLogs ? nRowLogs : logs.Length); i++)
             {
                 listLogsText += $"{logs[count - i]} \n";
             }
@@ -587,6 +608,41 @@ namespace Elevador_Simulador
         private bool isSystemLock()
         {
             return this.emergencia && this.moverPortas;
+        }
+
+        private void editConfig_Click(object sender, RoutedEventArgs e)
+        {
+            int aux;
+            if (int.TryParse(this.inNumAndares.Text, out aux))
+            {
+                if(this.Elevador.GetStatus() != StatusElevador.Parado || encoderPotas > 0)
+                {
+                    return;
+                }
+                if(aux < 5)
+                {
+                    this.nAndares = 5;
+                    this.inNumAndares.Text = "5";
+                }
+                else if (aux > 99)
+                {
+                    this.nAndares = 99;
+                    this.inNumAndares.Text = "99";
+                }
+                else
+                {
+                    this.nAndares = aux;
+                }
+
+                this.Simulador.PararSimulacao();
+                this.Predio = new Predio((byte)this.nAndares, nBotoesPainelInterno);
+                this.Elevador = new Elevador(this.Predio, this.Logs);
+                this.Simulador = new Simulador(this.Predio, minTimeSimulator, maxTimeSimulator);
+            }
+            else
+            {
+                this.inNumAndares.Text = this.nAndares.ToString();
+            }
         }
     }
 }
